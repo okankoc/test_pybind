@@ -1,0 +1,14 @@
+#include <pybind11/pybind11.h>
+#include <rclcpp/rclcpp.hpp>
+
+int add(int i, int j) {
+  rclcpp::Node node("my_node");
+  return i + j;
+}
+
+namespace py = pybind11;
+
+PYBIND11_MODULE(test_pybind_module, m) {
+  m.doc() = "pybind11 example plugin";
+  m.def("add", &add, "Adds two numbers.");
+}
