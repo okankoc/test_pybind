@@ -16,8 +16,23 @@ find_package(std_msgs REQUIRED)
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
 
-pybind11_add_module(${PROJECT_NAME}_module src/test_pybind.cpp)
-target_include_directories(${PROJECT_NAME}_module PRIVATE /opt/ros/foxy/include)
+include_directories(include)
+
+# publisher
+add_executable(${PROJECT_NAME}_pub src/publisher.cpp)
+target_include_directories(${PROJECT_NAME}_pub PUBLIC ${rclcpp_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME}_pub PUBLIC ${rclcpp_LIBRARIES} ${std_msgs_LIBRARIES})
+install(TARGETS ${PROJECT_NAME}_pub DESTINATION lib/${PROJECT_NAME})
+
+# subscriber
+add_executable(${PROJECT_NAME}_sub src/subscriber.cpp)
+target_include_directories(${PROJECT_NAME}_sub PUBLIC ${rclcpp_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME}_sub PUBLIC pthread ${rclcpp_LIBRARIES} ${std_msgs_LIBRARIES})
+install(TARGETS ${PROJECT_NAME}_sub DESTINATION lib/${PROJECT_NAME})
+
+# pybind functions
+pybind11_add_module(${PROJECT_NAME}_module src/pybind_call.cpp)
+target_include_directories(${PROJECT_NAME}_module PRIVATE ${rclcpp_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME}_module PRIVATE pybind11::module pthread ${rclcpp_LIBRARIES} ${std_msgs_LIBRARIES})
 install(TARGETS ${PROJECT_NAME}_module DESTINATION lib/${PROJECT_NAME})
 
